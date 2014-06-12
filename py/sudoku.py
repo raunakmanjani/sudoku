@@ -90,7 +90,6 @@ tt = 1
 while(tt==1):
     db = MySQLdb.connect(host="localhost",user="pydoku",passwd="su2048",db="sudoku")
     cur = db.cursor()
-    print "begin"
     cur.execute("SELECT id,data FROM masty where status='0' order by id asc")
     for row in cur.fetchall():
         id1 = row[0]
