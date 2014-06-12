@@ -1,9 +1,7 @@
-# Sudoku Solver Project
+# Sudoku Solver
 # Developer- Raunak Manjani
-import time
-sud=[]
 
-# basic functions to test
+# basic functions to test the position of a number in an empty square
 def get_cell_block(row,col) :
     block_row = row / 3
     block_col = col / 3
