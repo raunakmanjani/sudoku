@@ -1,5 +1,8 @@
 # Sudoku Solver Project
 # Developer- Raunak Manjani
+import time
+import MySQLdb
+
 def get_cell_block(row,col) :
     block_row = row / 3
     block_col = col / 3
@@ -17,7 +20,7 @@ def is_possible_column(sudoku, col, number) :
     if(number in a):
         return False
     else:
-		return True
+        return True
 def is_possible_block(sudoku, block, number):
     a=[]
     start_row = (block / 3) * 3
@@ -32,12 +35,13 @@ def is_possible_number(sudoku, row, col, number) :
         return True
     else:
         return False
-def print_it(sudoku):
+    #need it for debugging dont remove
+'''def print_it(sudoku):
     for i in range(0,9):
         x=''
         for j in range(0,9):
             x=x+str(sudoku[i][j])+" "
-        print x
+        print x'''
 def findzero(sudoku):
     for i in range (0,9):
         for j in range(0,9):
@@ -57,8 +61,48 @@ def solve(sudoku):
         
             sudoku[i][j]=0
     return False
-sudoku= [[ 0, 6, 0,   0, 2, 0,   0, 0, 0 ],[ 9, 0, 0, 0, 0, 8, 0, 0, 0 ],[ 2, 0,4,   0, 9, 0,   0, 6, 0 ],[ 0, 0, 0,   0, 0, 0,   1, 3, 0 ],[ 3, 0, 0,   0, 0, 0,   0, 0, 2 ],[ 0, 0, 8,   0, 7, 4,   5, 0, 0 ],[ 0, 0, 3,   5, 0, 0, 6,0,0 ],[ 0, 8, 0,   0, 0, 0,   0, 0, 4 ],[ 0, 0, 5,   0, 0, 0,8, 0, 0 ] ]
-print_it(sudoku)
-print ''
-solve(sudoku)
-print_it(sudoku)
+
+
+def start(tree):
+    sudoku = []
+    a=tree
+    z=[int(a[0])]
+    for j in range(1,81):
+        if j%9!=0:
+            z.append(int(a[j]))
+
+        else:
+            sudoku.append(z)
+            z=[int(a[j])]
+            
+    sudoku.append(z)
+    solve(sudoku)
+    strng=''
+    for i in range(0,9):
+        for j in range(0,9):
+            strng=strng+str(sudoku[i][j])
+    return strng
+    
+
+print "Initiating server"
+tt = 1
+while(tt==1):
+    db = MySQLdb.connect(host="localhost",user="pydoku",passwd="su2048",db="sudoku")
+    cur = db.cursor()
+    print "begin"
+    cur.execute("SELECT id,data FROM masty where status='0' order by id asc")
+    for row in cur.fetchall():
+        id1 = row[0]
+        ss = row[1]
+        print id1
+        print ss
+        if(ss!=""):
+            out = start(ss)
+            print out    
+            yy = "UPDATE masty SET `status`='1', `ot`='%s' WHERE `id`=%s" % (out,id1)
+            cur.execute(yy)
+            db.commit()
+            print "updated"
+    cur.close()  
+    db.close()
+    time.sleep(1)  
